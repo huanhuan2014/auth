@@ -1,0 +1,66 @@
+<!--boostrap modal -->
+<div class="modal fade bs-example-modal-sm" tabindex="-1" id="search-role-modal" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="z-index: 1050">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">角色搜索</h4>
+            </div>
+            <div class="modal-body">
+                <div id="role-search-list"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="btn-role-search-ok" class="btn btn-primary">确定</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script>
+    var multiple = false;//是否支持多选,默认不支持
+
+    function ajax_role_search(page,multipleTemp){
+        if(page == null || page == undefined){
+            page = 1;
+        }
+        if(multipleTemp == true){
+            multiple = true;
+        }
+        $.ajax({
+            url:"/Auth/AuthRole/ajax_role_search",
+            data:{'p':page},
+            dataType:"json",
+            type:"get",
+            success:function(data){
+                if(data.code !=1){
+                    alertMsg({"msg":data.msg, "type":0});
+                }else{
+                    $("#role-search-list").html(data.data);
+                    $("#search-role-modal").modal();
+                }
+            }
+        });
+    }
+
+    $("#btn-role-search-ok").click(function(){
+        var len = $(".role-chk-item:checked").length;
+        if(len <=0){
+            alertMsg({"msg":"请选择数据行", "type":0});
+            return;
+        }
+        if(len>1 && !multiple){
+            alertMsg({"msg":"只能选择一行数据", "type":0});
+            return;
+        }
+        var roleList = new Array();
+        $(".role-chk-item:checked").each(function(){
+            var roleInfo = new Object();
+            roleInfo.code = $(this).val();
+            roleInfo.name = $(this).attr('roleName');
+            roleList.push(roleInfo);
+        });
+        //回调函数
+        setRoleInfo(roleList);
+        $("#search-role-modal").modal('hide');
+    });
+</script>

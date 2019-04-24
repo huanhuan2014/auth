@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <include file="Public:head"/>
+    <style type="text/css">
+        .modal-backdrop{z-index: 0;}
+        .table-eidt tr{height:60px;}
+        .form-edit .input-group{margin-top:5px;}
+        .form-edit .input-group:first-child{margin-top: 0;}
+        #btn-toolbar{margin-top:0 !important;}
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+</div>
+<include file="Public:button"/>
+<div class="container-fluid">
+    <table  class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th style="width:20px;">#</th>
+            <th style="width:20px;"><input type="checkbox" id="chk-all"/></th>
+            <th>token</th>
+
+            <th>应用编号</th>
+            <th>应用名称</th>
+            <th>应用IP</th>
+            <th>应用地址</th>
+
+            <th>状态</th>
+            <th>备注</th>
+            <th>更新人</th>
+            <th>更新时间</th>
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="list" key="j" id="vo">
+            <tr>
+                <td>{$j}</td>
+                <td><input type="checkbox" value="{$vo.id}" class="chk-item"/></td>
+                <td>{$vo.token}</td>
+
+                <td>{$vo.app.code}</td>
+                <td>{$vo.app.name}</td>
+                <td>{$vo.app.ip}</td>
+                <td>{$vo.app.url}</td>
+
+                <td><if condition="$vo.status eq 1">启用<else/>停用</if></td>
+                <td>{$vo.remark}</td>
+                <td>{$vo.opt_user_name}</td>
+                <td>{$vo.opt_time}</td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+</div>
+<div id="modal-container"></div>
+</body>
+</html>
+<include file="Public:list"/>

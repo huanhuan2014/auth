@@ -1,0 +1,80 @@
+<!--boostrap modal -->
+<div class="modal fade bs-example-modal-sm" tabindex="-1" id="search-org-modal" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="z-index: 1050">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">部门搜索</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-inline">
+                    <input class="form-control" name="org_code" placeholder="部门编号"/>
+                    <input class="form-control" name="org_name" placeholder="部门名称"/>
+                    <button id="btn-org-search" class="btn btn-primary">搜索</button>
+                </div>
+                <div id="org-search-list"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="btn-org-search-ok" class="btn btn-primary">确定</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script>
+    var multiple = false;//是否支持多选,默认不支持
+    $("#btn-org-search").click(function(data){
+        ajax_org_search(1,false);
+    });
+
+    function ajax_org_search(page,first,multipleTemp){
+        if(page == null || page == undefined){
+            page = 1;
+        }
+        if(multipleTemp == true){
+            multiple = true;
+        }
+        if(first==true){
+            $("input[name='org_name']").val('');
+            $("input[name='org_code']").val('');
+        }
+        var org_code = $("input[name='org_name']").val().trim();
+        var org_name = $("input[name='org_code']").val().trim();
+        $.ajax({
+            url:"/Auth/AuthOrganization/ajax_org_search",
+            data:{'p':page,'org_code':org_code,'org_name':org_name},
+            dataType:"json",
+            type:"get",
+            success:function(data){
+                if(data.code !=1){
+                    alertMsg({"msg":data.msg, "type":0});
+                }else{
+                    $("#org-search-list").html(data.data);
+                    $("#search-org-modal").modal();
+                }
+            }
+        });
+    }
+
+    $("#btn-org-search-ok").click(function(){
+        var len = $(".org-chk-item:checked").length;
+        if(len <=0){
+            alertMsg({"msg":"请选择数据行", "type":0});
+            return;
+        }
+        if(len>1 && !multiple){
+            alertMsg({"msg":"只能选择一行数据", "type":0});
+            return;
+        }
+        var orgList = new Array();
+        $(".org-chk-item:checked").each(function(){
+            var orgInfo = new Object();
+            orgInfo.code = $(this).val();
+            orgInfo.name = $(this).attr('orgName');
+            orgList.push(orgInfo);
+        });
+        //回调函数
+        setOrgInfo(orgList);
+        $("#search-org-modal").modal('hide');
+    });
+</script>

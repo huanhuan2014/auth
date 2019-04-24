@@ -1,0 +1,30 @@
+
+<table class="table table-hover table-bordered" style="margin-top:10px;">
+    <thead>
+    <tr>
+        <th style="width:30px;"></th>
+        <th style="width:20px;"><input type="checkbox" id="chk-all"/></th>
+        <th style="width:80px;">编号</th>
+        <th>姓名</th>
+
+        <th>部门</th>
+        <th>电话</th>
+        <th>性别</th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="vo">
+        <tr class="tr-data">
+            <td>{$i}</td>
+            <td><input type="checkbox" userName="{$vo.name}" value="{$vo.code}" class="user-chk-item"/></td>
+            <td>{$vo.code}</td>
+            <td>{$vo.name}</td>
+
+            <td>{$vo.email}</td>
+            <td>{$vo.phone}</td>
+            <td><if condition="$vo.sex eq 1">男<else/>女</if></td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+{$page}

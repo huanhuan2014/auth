@@ -1,0 +1,66 @@
+<!--boostrap modal -->
+<div class="modal fade bs-example-modal-sm" tabindex="-1" id="myModal" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content" style="z-index: 1050">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">部门管理</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-edit" id="form-edit">
+                    <div class="input-group">
+                        <div class="input-group-addon">父部门</div>
+                        <input disabled="disabled" class="form-control" value="{$parentOrg.name|default=''}"/>
+                        <input type="hidden" class="param" name="parent_code" mast="0" value="{$parentOrg.code|default=''}"/>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">编号&#12288;</div>
+                        <input type="text" class="form-control param" name="code" desc="部门编号" mast="1" value="{$data.code|default=''}" id="code" placeholder="部门编号"/>
+                    </div>
+                    
+                    <div class="input-group">
+                        <div class="input-group-addon">名称&#12288;</div>
+                        <input type="text" class="form-control param" name="name" mast="1" desc="部门名称" value="{$data.name|default=''}" id="name" placeholder="部门名称"/>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">负责人</div>
+                        <input type="text" id="leader-name" value="{$leader.name|default=''}" disabled="disabled" class="form-control" desc="部门负责人"/>
+                        <input type="hidden" class="param" value="{$leader.code|default=''}" id="leader" name="leader"/>
+                        <div class="input-group-addon" ><span id="userSearch" style="cursor: pointer" class="glyphicon glyphicon-search"></span></div>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">排序&#12288;</div>
+                        <input type="number" class="form-control param" name="sort" desc="排序顺序" value="{$data.sort|default=''}" value="0" id="sort" placeholder="排序顺序"/>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">状态&#12288;</div>
+                        <div class="input-status">
+                            <label class="radio-inline">
+                                <input type="radio" class="status param" <?php if(empty($data) || $data['status']==1) echo "checked='checked'"?> name="status" id="status1" value="1"/>启用
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio"  class="status param" <?php if(!empty($data) && $data['status']==0) echo "checked='checked'"?> name="status" id="status0" value="0" />停用
+                            </label>
+                        </div>
+                    </div>
+                    <input type="hidden" name="id" class="param" value="{$data.id}" id="modal-id"/>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="btn-save" class="btn btn-primary">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<include file="Public:edit"/>
+<script>
+    $("#userSearch").click(function(){
+        ajax_user_search(1,true);
+    });
+
+    function setUserInfo(userCode, userName){
+        $("#leader").val(userCode);
+        $("#leader-name").val(userName);
+    }
+</script>

@@ -1,0 +1,57 @@
+<!--boostrap modal -->
+<div class="modal fade bs-example-modal-sm" tabindex="-1" id="myModal" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content" style="z-index: 1050">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">菜单类别管理</h4>
+        </div>
+        <div class="modal-body">
+            <form class="form-edit" id="form-edit">
+                <div class="input-group">
+                    <div class="input-group-addon">编号</div>
+                    <input type="text" class="form-control param" name="code" desc="类别编号" mast="1" value="{$data.code|default=''}" id="code" placeholder="类别编号"/>
+                </div>
+                <div class="input-group">
+                    <div class="input-group-addon">名称</div>
+                    <input type="text" class="form-control param" name="name" mast="1" desc="类别名称" value="{$data.name|default=''}" id="name" placeholder="类别名称"/>
+                </div>
+                <div class="input-group">
+                    <div class="input-group-addon">所属APP</div>
+                    <select name="app_code" class="form-control param">
+                        <volist name="appList" id="vo">
+                            <option <if condition="$data['app_code'] eq $vo['code']">selected="selected"</if> value="{$vo.code}">{$vo.name}</option>
+                        </volist>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <div class="input-group-addon">排序</div>
+                    <input type="number" class="form-control param" name="sort" desc="排序顺序" value="{$data.sort|default=''}" id="sort" placeholder="排序顺序"/>
+                </div>
+                <div class="input-group">
+                    <div class="input-group-addon">状态</div>
+                    <div class="input-status">
+                        <label class="radio-inline">
+                            <input type="radio" class="status param" <?php if(empty($data) || $data['status']==1) echo "checked='checked'"?> name="status" id="status1" value="1"/>启用
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio"  class="status param" <?php if(!empty($data) && $data['status']==0) echo "checked='checked'"?> name="status" id="status0" value="0" />停用
+                        </label>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-group-addon">图标</div>
+                    <input class="form-control param" name="icon" value="{$data.icon}" id="icon" placeholder="图标"/>
+                </div>
+                <input type="hidden" name="id" class="param" value="{$data.id}" id="modal-id"/>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="button" id="btn-save" class="btn btn-primary">保存</button>
+        </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<include file="Public:edit"/>
+</script>

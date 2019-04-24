@@ -1,0 +1,75 @@
+<!--boostrap modal -->
+<div class="modal fade bs-example-modal-sm" tabindex="-1" id="search-user-modal" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="z-index: 1050">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">人员搜索</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-inline">
+                    <input class="form-control" name="user_code" placeholder="用户编号"/>
+                    <input class="form-control" name="user_name" placeholder="用户名称"/>
+                    <button id="btn-user-search" class="btn btn-primary">搜索</button>
+                </div>
+                <div id="user-search-list"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="btn-ok" class="btn btn-primary">确定</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script>
+    var multiple = false;//是否支持多选,默认不支持
+    $("#btn-user-search").click(function(data){
+        ajax_user_search();
+    });
+
+    function ajax_user_search(page,first,multipleTemp){
+        if(page == null || page == undefined){
+            page = 1;
+        }
+        if(multipleTemp==true){
+            multiple = true;
+        }
+        if(first==true){
+            $("input[name='user_code']").val('');
+            $("input[name='user_code']").val('');
+        }
+        var user_code = $("input[name='user_code']").val().trim();
+        var user_name = $("input[name='user_name']").val().trim();
+        $.ajax({
+            url:"/Auth/AuthUser/ajax_user_search",
+            data:{'p':page,'user_code':user_code,'user_name':user_name},
+            dataType:"json",
+            type:"get",
+            success:function(data){
+                if(data.code !=1){
+                    alertMsg({"msg":data.msg, "type":0});
+                }else{
+                    $("#user-search-list").html(data.data);
+                    $("#search-user-modal").modal();
+                }
+            }
+        });
+    }
+
+    $("#btn-ok").click(function(){
+        var len = $(".user-chk-item:checked").length;
+        if(len <=0){
+            alertMsg({"msg":"请选择数据行", "type":0});
+            return;
+        }
+        if(len>1 && !multiple){
+            alertMsg({"msg":"只能选择一行数据", "type":0});
+            return;
+        }
+        var userCode = $(".user-chk-item:checked").val();
+        var userName = $(".user-chk-item:checked").attr('userName');
+        //回调函数
+        setUserInfo(userCode, userName);
+        $("#search-user-modal").modal('hide');
+    });
+</script>

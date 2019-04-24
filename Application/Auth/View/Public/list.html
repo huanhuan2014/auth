@@ -1,0 +1,96 @@
+<script type="text/javascript">
+    /*数据维护列表公用js*/
+$("#chk-all").change(function(){
+    if($(this).prop("checked")){
+        $(".chk-item").prop("checked",true);
+    }else{
+        $(".chk-item").prop("checked",false);
+    }
+});
+
+$(".chk-item").change(function(){
+    if($(".chk-item:checked").length==$(".chk-item").length){
+        $("#chk-all").prop("checked",true);
+    }else{
+        $("#chk-all").prop("checked",false);
+    }
+});
+
+$("#btn-add").click(function(){
+    $.ajax({
+        url:"__URL__/addView",
+        type:"post",
+        dataType:"json",
+        success:function(data){
+            if(data.code == 1){
+                $("#modal-container").html(data.data);
+                $("#myModal").modal();
+            }else{
+                alertMsg({"msg":data.msg, "type":0});
+            }
+        }
+    });
+});
+
+$("#btn-edit").click(function(){
+    var count = $(".chk-item:checked").length
+    if(count<=0){
+        alertMsg({"msg":"请选择需要修改的数据", "type":0});
+        return;
+    }
+    if(count>1){
+        alertMsg({"msg":"只能选择一行数据进行修改", "type":0});
+        return;
+    }
+    var id = $(".chk-item:checked").val();
+    $.ajax({
+        url:"__URL__/editView",
+        type:"post",
+        dataType:"json",
+        data:{"id":id},
+        success:function(data){
+            if(data.code==1){
+                $("#modal-container").html(data.data);
+                $("#myModal").modal();
+            }else{
+                alertMsg({"msg":data.msg, "type":0});
+            }
+        }
+    });
+});
+
+$("#btn-del").click(function(){
+    var count = $(".chk-item:checked").length
+    if(count<=0){
+        alertMsg({"msg":"请选择需要删除的数据", "type":0});
+        return;
+    }
+    confirmMsg({"msg":"您确定要删除所选数据？", "func":function(){
+        var ids = "";
+        $(".chk-item:checked").each(function(){
+            if(ids.length>0){
+                ids += ",";
+            }
+            ids += $(this).val();
+
+            $.ajax({
+                url:"__URL__/del",
+                type:"post",
+                dataType:"json",
+                data:{"ids":ids},
+                success:function(data){
+                    if(data.code==1){
+                        alertMsg({"msg":data.msg, "end":function(){window.location.reload();}});
+                    }else{
+                        alertMsg({"msg":data.msg, "type":0});
+                    }
+                }
+            });
+        });
+    }});
+});
+
+$("#btn-refresh").click(function(){
+    window.location.reload();
+});
+</script>

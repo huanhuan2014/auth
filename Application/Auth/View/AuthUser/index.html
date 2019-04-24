@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <include file="Public:head"/>
+</head>
+<body>
+
+<div class="container-fluid">
+    <form class="form-inline">
+        <input name="user_code" class="form-control" value="{$user_code|default=''}" placeholder="用户编号"/>
+        <input name="user_name" class="form-control" value="{$user_name|default=''}" placeholder="用户名称"/>
+        <select class="form-control" name="role_code">
+            <option value="">请选择角色</option>
+            <volist name="roleList" id="vo">
+                <option value="{$vo.code}" <if condition="$role_code eq $vo['code']">selected='selected'</if> >{$vo.name}</option>
+            </volist>
+        </select>
+        <button class="btn btn-primary">搜索</button>
+    </form>
+</div>
+<include file="Public:button"/>
+<div class="container-fluid">
+    <table id="tbl-user" class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th style="width:20px;">#</th>
+            <th style="width:20px;"><input type="checkbox" id="chk-all"/></th>
+            <th>编号</th>
+            <th>名称</th>
+
+            <th>邮件</th>
+            <th>电话</th>
+            <th>性别</th>
+            <th>角色</th>
+
+            
+            <th>部门</th>
+            <th>公司</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="list" id="vo">
+            <tr user_code="{$vo.code}">
+                <td>{$i}</td>
+                <td><input type="checkbox" value="{$vo.id}" class="chk-item"/></td>
+                <td>{$vo.code}</td>
+                <td>{$vo.name}</td>
+
+                <td>{$vo.email}</td>
+                <td>{$vo.phone}</td>
+                <td><if condition="$vo.sex eq 1">男<else/>女</if></td>
+                <td class="td-role-name">{$vo.role_name}</td>
+
+                <td class="td-org-name">{$vo.org_name}</td>
+                <td class="td-company-name">{$vo.company_name}</td>
+                <td><if condition="$vo.status eq 1">启用<else/>停用</if></td>
+                <td>
+                    <a class="set-org" href="javascript:setOrg('{$vo.code}')">部门</a>
+                    <a class="set-role" href="javascript:setRole('{$vo.code}')">角色</a>
+                    <a class="set-company" href="javascript:setCompany('{$vo.code}')">公司</a>
+                </td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+    {$page}
+</div>
+<div id="modal-container"></div>
+</body>
+</html>
+<include file="Public:list"/>
+<include file="AuthOrganization:search"/>
+<include file="AuthRole:search"/>
+<include file="AuthCompany:search"/>
+<script>
+    var selectUserCode = '';
+    function setOrg(code){
+        selectUserCode = code;
+        ajax_org_search(1,true,true);
+    }
+
+    function setRole(code){
+        selectUserCode = code;
+        ajax_role_search(1, true);
+    }
+
+    function setCompany(code){
+        selectUserCode = code;
+        ajax_company_search(1, true);
+    }
+
+    function setOrgInfo(orgInfos){
+        var orgCodes = new Array();
+        var orgNames = new Array();
+        for(var k in orgInfos){
+            orgCodes.push(orgInfos[k].code);
+            orgNames.push(orgInfos[k].name);
+        }
+        orgCodes = orgCodes.join(',');
+        orgNames = orgNames.join(',');
+        $.ajax({
+            url:"__URL__/ajax_set_org",
+            data:{'org_code':orgCodes,'user_code':selectUserCode},
+            dataType:"json",
+            type:"post",
+            success:function(data){
+                if(data.code ==1){
+                    alertMsg({"msg":data.msg, "end":function(){
+                        $("#tbl-user tbody tr[user_code='"+selectUserCode+"']").find(".td-org-name").text(orgNames);
+                    }});
+                }else{
+                    alertMsg({"msg":data.msg, "type":0});
+                }
+            }
+        });
+    }
+
+    function setRoleInfo(roleInfos){
+        var roleCodes = new Array();
+        var roleNames = new Array();
+        for(var k in roleInfos){
+            roleCodes.push(roleInfos[k].code);
+            roleNames.push(roleInfos[k].name);
+        }
+        roleCodes = roleCodes.join(',');
+        roleNames = roleNames.join(',');
+        $.ajax({
+            url:"__URL__/ajax_set_role",
+            data:{'role_code':roleCodes,'user_code':selectUserCode},
+            dataType:"json",
+            type:"post",
+            success:function(data){
+                if(data.code ==1){
+                    alertMsg({"msg":data.msg, "end":function() {
+                        $("#tbl-user tbody tr[user_code='" + selectUserCode + "']").find(".td-role-name").text(roleNames);
+                    }});
+                }else{
+                    alertMsg({"msg":data.msg, "type":0});
+                }
+            }
+        });
+    }
+
+    function setCompanyInfo(companyInfo){
+        var companyCodes = new Array();
+        var companyNames = new Array();
+        for(var k in companyInfo){
+            companyCodes.push(companyInfo[k].code);
+            companyNames.push(companyInfo[k].name);
+        }
+        companyCodes = companyCodes.join(',');
+        companyNames = companyNames.join(',');
+        $.ajax({
+            url:"__URL__/ajax_set_company",
+            data:{'company_code':companyCodes,'user_code':selectUserCode},
+            dataType:"json",
+            type:"post",
+            success:function(data){
+                if(data.code ==1){
+                    alertMsg({"msg":data.msg, "end":function(){
+                            $("#tbl-user tbody tr[user_code='"+selectUserCode+"']").find(".td-company-name").text(companyNames);
+                        }});
+                }else{
+                    alertMsg({"msg":data.msg, "type":0});
+                }
+            }
+        });
+    }
+</script>

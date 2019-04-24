@@ -1,0 +1,23 @@
+<table class="table table-hover table-bordered">
+    <thead>
+        <tr>
+            <th style="width:20px;">#</th>
+            <th style="width:20px;"><input type="checkbox" id="chk-all"/></th>
+            <volist name="roleMenuColumnList" id="column">
+                <th>{$column.column_name}</th>
+            </volist>
+        </tr>
+    </thead>
+    <tbody>
+        <volist name="list" key="j" id="vo">
+            <tr>
+                <td>{$j}</td>
+                <td><input type="checkbox" value="{$vo.id}" class="chk-item"/></td>
+                <volist name="roleMenuColumnList" id="column">
+                    <php>$columnName = $column['column_code']</php>
+                    <td>{$vo[$columnName]}</td>
+                </volist>
+            </tr>
+        </volist>
+    </tbody>
+</table>

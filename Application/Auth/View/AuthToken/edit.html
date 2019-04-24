@@ -1,0 +1,66 @@
+<!--boostrap modal -->
+<div class="modal fade bs-example-modal-sm" tabindex="-1" id="myModal" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="z-index: 1050">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Token编辑</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-edit">
+                    <div class="input-group">
+                        <div class="input-group-addon">应用</div>
+                        <select name="app_code" desc="应用" class="form-control param" mast="1">
+                            <option value="">请选择应用</option>
+                            <volist name="appList" id="vo">
+                                <option <if condition="$data['app_code'] eq $vo['code']">selected='selected'</if> value="{$vo.code}">{$vo.name}</option>
+                            </volist>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">公钥</div>
+                        <input type="text" class="form-control param" disabled="disabled" desc="公钥" mast="1" name="token"  value="{$data.token|default=''}"  placeholder="公钥"/>
+                        <span title="生成" class="input-group-addon fa fa-key" style="cursor: pointer" id="span-token">生成</span>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-group-addon">状态</div>
+                        &nbsp;
+                        <label class="radio-inline">
+                            <input type="radio" desc="状态" class="modal-status param" <?php if(empty($data) || $data['status']==1) echo "checked='checked'";?> name="status" id="modal-status1" value="1" checked="checked" />&nbsp;启用
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" desc="状态" class="modal-status param" <?php if(!empty($data) && $data['status']==0) echo "checked='checked'";?>  name="status" id="modal-status0" value="0"  />&nbsp;停用
+                        </label>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">备注</div>
+                        <textarea class="form-control param" name="remark" desc="备注" placeholder="备注">{$data.remark|default=''}</textarea>
+                    </div>
+                    <input type="hidden" id="id" name="id" class="param" mast="0" value="{$data.id|default=''}"/>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="btn-save" class="btn btn-primary">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<include file="Public:edit"/>
+<script>
+    $("#span-token").click(function(){
+        $.ajax({
+            url:"__URL__/ajax_get_token",
+            type:"get",
+            dataType:"json",
+            success:function(data){
+                if(data.code !=1){
+                    alertMsg({"msg":data.msg, "type":0});
+                }else{
+                    $("input[name='token']").val(data.data);
+                }
+            }
+        });
+    });
+</script>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <include file="Public:head"/>
+</head>
+<body>
+    <form>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+                    主场胜（赔率）<br/>
+                    <input name="team1" value="{$temp1|default=''}"/>
+                </div>
+                <div class="col-md-3">
+                    平局（赔率）<br/>
+                    <input name="deuce" value="{$deuce|default=''}"/>
+                </div>
+                <div class="col-md-3">
+                    客场胜（赔率）<br/>
+                    <input name="team2" value="{$team2|default=''}"/>
+                </div>
+                <div class="col-md-3">
+                    投注总手数<br/>
+                    <input name="total" value="{$total|default=''}"/>
+                </div>
+            </div>
+            <button class="btn btn-primary" style="margin-top:20px;">确定</button>
+        </div>
+    </form>
+    <div class="container-fluid" style="margin-top:20px;">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>主场</th>
+                    <th>平局</th>
+                    <th>客场</th>
+                    <th>金额</th>
+                </tr>
+            </thead>
+            <tbody>
+                <volist name="count" id="vo">
+                    <tr>
+                        <td>{$i}</td>
+                        <td>{$vo.team1_number}</td>
+                        <td>{$vo.deuce_number}</td>
+                        <td>{$vo.team2_number}</td>
+                        <td>{$vo.total}</td>
+                    </tr>
+                </volist>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

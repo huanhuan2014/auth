@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>流程编辑</title>
+    <link type="text/css" rel="stylesheet" href="__PUBLIC__/css/bootstrap.min.css"/>
+    <link type="text/css" rel="stylesheet" href="__PUBLIC__/css/font-awesome.min.css"/>
+    <script src="__PUBLIC__/js/jquery-1.10.0.min.js"></script>
+    <script src="__PUBLIC__/js/bootstrap.min.js"></script>
+    <script src="__PUBLIC__/js/go.js"></script>
+    <script src="__PUBLIC__/js/flow/flow-design.js"></script>
+</head>
+<body onload="init()">
+<div id="sample">
+    <div style="width:100%; white-space:nowrap;">
+    <span style="display: inline-block; vertical-align: top; width:105px">
+      <div id="myPaletteDiv" style="border: solid 1px black; height: 620px"></div>
+    </span>
+
+        <span style="display: inline-block; vertical-align: top; width:80%">
+      <div id="myDiagramDiv" style="border: solid 1px black; height: 620px;background-image:url('__PUBLIC__/img/flow-bg.jpg')"></div>
+    </span>
+    </div>
+    <div>
+        <div>
+            <button id="SaveButton" onclick="save()">Save</button>
+            <button onclick="load()">Load</button>
+            Diagram Model saved in JSON format:
+        </div>
+        <textarea id="mySavedModel" style="width:100%;height:300px">
+            { "class": "go.GraphLinksModel",
+              "linkFromPortIdProperty": "fromPort",
+              "linkToPortIdProperty": "toPort",
+              "nodeDataArray": [
+             ],
+              "linkDataArray": [
+             ]}
+        </textarea>
+    </div>
+</div>
+<!--设置条件-->
+<div class="modal fade" tabindex="-100" id="conditionModal" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog" role="document" style="z-index: 1050">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">设置条件</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="btn-condition-save" class="btn btn-primary">确定</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!--设置审批人-->
+<div class="modal fade" tabindex="-100" id="disposeModal" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog" role="document" style="z-index: 1050">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">设置审批人</h4>
+            </div>
+            <div class="modal-body">
+                <input id="dispose1" type="radio" name="dispose" value="deptLeader"/>
+                <label for="dispose1">部门负责人</label>
+                <input id="dispose2" type="radio" name="dispose" value="role"/>
+                <label for="dispose2">角色</label>
+                <input id="dispose3" type="radio" name="dispose" value="user"/>
+                <label for="dispose3">用户</label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="btn-dispose-save" class="btn btn-primary">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+</body>
+</html>

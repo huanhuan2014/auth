@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+ <html>
+<head>
+    <include file="Public:head"/>
+    <style type="text/css">
+        .modal-backdrop{z-index: 0;}
+        .table-eidt tr{height:60px;}
+        .form-edit .input-group{margin-top:5px;}
+        .form-edit .input-group:first-child{margin-top: 0;}
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <form class="form-inline" action="/index.php/Auth/AuthMenu">
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon">菜单编号</div>
+                    <input type="text" class="form-control" name="search_code" value="{$search_code|default=''}" placeholder="菜单编号"/>
+                </div>
+                <div class="input-group">
+                    <div class="input-group-addon">菜单名称</div>
+                    <input type="text" class="form-control" name="search_name" value="{$search_name|default=''}" placeholder="菜单名称"/>
+                </div>
+                <div class="input-group">
+                    <div class="input-group-addon">菜单类别</div>
+                    <select name="search_category" class="form-control">
+                        <option value="">请选择类别</option>
+                        <volist name="categoryList" id="vo">
+                            <option <if condition="$search_category eq $vo['code']">selected='selected'</if> value="{$vo.code}">{$vo.name}</option>
+                        </volist>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <div class="input-group-addon">所属应用</div>
+                    <select name="search_app" class="form-control">
+                        <option value="">请选择类别</option>
+                        <volist name="appList" id="vo">
+                            <option <if condition="$search_app eq $vo['code']">selected='selected'</if> value="{$vo.code}">{$vo.name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-default"><i class="fa fa-search"></i>&nbsp;搜索</button>
+        </form>
+    </div>
+    <include file="Public:button"/>
+    <div class="container-fluid">
+        <table class="table table-hover table-bordered">
+            <thead>
+            <tr>
+                <th style="width:20px;">#</th>
+                <th style="width:20px;"><input type="checkbox" id="chk-all"/></th>
+                <th>所属应用</th>
+                <th>所属类别</th>
+                <th>编号</th>
+
+                <th>名称</th>
+                <th>控制器</th>
+                <th>默认方法</th>
+                <th>链接地址</th>
+
+                <th>状态</th>
+                <th>行权限</th>
+                <th>是否显示</th>
+                <th>排序</th>
+            </tr>
+            </thead>
+            <tbody>
+            <volist name="list" key="j" id="vo">
+                <tr>
+                    <td>{$j}</td>
+                    <td><input type="checkbox" value="{$vo.id}" class="chk-item"/></td>
+                    <td>{$vo.app_name}</td>
+                    <td>{$vo.category_name}</td>
+                    <td>{$vo.code}</td>
+
+                    <td>{$vo.name}</td>
+                    <td>{$vo.controller}</td>
+                    <td>{$vo.default_action}</td>
+                    <td>{$vo.url}</td>
+
+                    <td>{$vo.status}</td>
+                    <td>{$vo.in_row_rule}</td>
+                    <td>{$vo.show_in_menu}</td>
+                    <td>{$vo.sort}</td>
+                </tr>
+            </volist>
+            </tbody>
+        </table>
+    </div>
+    <div class="container-fluid">
+        {$page}
+    </div>
+    <div id="modal-container"></div>
+</body>
+</html>
+ <include file="Public:list"/>
+ <script>
+     $("#category").val("{$category_code|default=''}");
+ </script>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <include file="Public:head"/>
+    <title>方法权限</title>
+    <style>
+        body{
+            font-size:12px;
+        }
+        .div-content{
+            border-left:3px solid #d9534f;
+            padding-left:10px;
+            margin-bottom:20px;
+            padding-top:0;
+        }
+        .div-content::after,.div-content::before{
+            content: '!';
+            border-radius: 15px;
+            background-color:#d9534f;
+            position: relative;
+
+            left:-19px;
+            height:15px;
+            width:15px;
+            display:inline-block;
+            text-align: center;
+            color:#fff;
+        }
+        .div-content::after{
+            bottom:0;
+        }
+        .div-content::before{
+            top:0;
+        }
+        .div-content p{
+            padding-left:20px;
+        }
+        .lbl-method{
+            font-weight:100;
+            color:#333;
+            font-size:12px;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <form class="form-inline">
+        <div class="input-group">
+            <div class="input-group-addon">角色</div>
+            <select id="role" name="role" class="form-control">
+                <volist name="roleList" id="vo">
+                    <option value="{$vo.code}">{$vo.name}</option>
+                </volist>
+            </select>
+        </div>
+        <div class="input-group">
+            <div class="input-group-addon">菜单类别</div>
+            <select id="category" name="category" class="form-control">
+                <volist name="menuCategoryList" id="vo">
+                    <option value="{$vo.code}">{$vo.name}</option>
+                </volist>
+            </select>
+        </div>
+        <button class="btn btn-default"><i class="fa fa-search"></i>&nbsp;搜索</button>
+    </form>
+    <div class="div-content">
+        <h3>{$menuCategoryName}</h3>
+        <volist name="menuColumnList" key="k" id="menu">
+            <p class="p-menu {$menu.code}" menuCode = "{$menu.code}">
+                <label>{$menu.name}</label>
+                &nbsp;
+                <input type="checkbox" menuCode="{$menu.code}" class="checkAll" id="checkAll{$k}"/><label style="color:#337ab7;" for="checkAll{$k}"> 全选</label>
+                &#12288;&#12288;
+                <volist name="menu.columnList" id="column">
+                    <input type="checkbox" class="column" id="{$column.code}{$k}" value="{$column.code}" sort="{$column.sort}" column_name="{$column.name}" name="column"
+                           menuCode = "{$menu.code}"
+                    <volist name="roleMenuColumnList" id="roleMenuColumn">
+                        <if condition="$menu['code'] eq $roleMenuColumn['menu_code'] and $column['code'] eq $roleMenuColumn['column_code']">
+                            checked='checked'
+                        </if>
+                    </volist>
+                    />
+                    <label class="lbl-method" for="{$column.code}{$k}">{$column.name}</label>&#12288;
+                </volist>
+            </p>
+        </volist>
+    </div>
+
+    <div class="btnClear" style="clear: both;"></div><br/>
+    <button id="btn-sure" class="btn btn-info">保存</button>
+</div>
+</body>
+</html>
+<script>
+    $("#category").val("{$category_code|default=''}");
+    $("#role").val("{$role_code|default=''}");
+
+    $(function(){
+        $(".p-menu").each(function(){
+            var checkLen = $(this).find(".column:checked").length;
+            var allLen = $(this).find(".column").length;
+            if(allLen >0 && checkLen == allLen){
+                $(this).find(".checkAll").prop('checked', true);
+            }
+        });
+    });
+
+    $("#btn-sure").click(function(){
+        var param = new Object();
+        param.role_code = $("#role").val();
+        param.category_code = $("#category").val();
+        param.menu_column = new Array();
+        param.menu_codes = new Array();
+        $(".p-menu").each(function(){
+            var menuCode = $(this).attr("menuCode");
+            param.menu_codes.push(menuCode);
+        });
+
+        $(".column:checked").each(function(){
+            var paramTemp = new Object();
+            paramTemp.menu_code = $(this).attr("menuCode");
+            paramTemp.column_code = $(this).val();
+            paramTemp.column_name = $(this).attr("column_name");
+            paramTemp.sort = $(this).attr('sort');
+            param.menu_column.push(paramTemp);
+        });
+
+        $.ajax({
+            url:"__URL__/ajax_save",
+            type:"post",
+            dataType:"json",
+            data:param,
+            success:function(data){
+                if(data.code == 1){
+                    alertMsg({"msg":data.msg});
+                }else{
+                    alertMsg({"msg":data.msg, "type":0});
+                }
+            }
+        });
+    });
+
+    $(".checkAll").change(function(){
+        var menuCode = $(this).attr('menuCode');
+        if($(this).prop('checked')){
+            $("."+menuCode).find(".column").prop('checked', true);
+        }else{
+            $("."+menuCode).find(".column").prop('checked', false);
+        }
+    });
+</script>

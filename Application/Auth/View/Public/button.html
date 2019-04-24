@@ -1,0 +1,9 @@
+<if condition="$buttonList">
+    <div class="container-fluid" id="btn-toolbar" style="margin:10px 0;">
+        <div class="btn-group">
+            <volist name="buttonList" id="vo">
+                <button type="button" id="{$vo.code}" class="btn btn-default btn-sm"><i class="{$vo.icon}"></i>&nbsp;{$vo.name}</button>
+            </volist>
+        </div>
+    </div>
+</if>

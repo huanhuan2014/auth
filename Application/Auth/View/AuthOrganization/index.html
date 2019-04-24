@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <include file="Public:head"/>
+    <link type="text/css" href="__PUBLIC__/css/bootstrap-treeview.min.css" rel="stylesheet"/>
+    <script src="__PUBLIC__/js/bootstrap-treeview.min.js"></script>
+    <title>组织结构管理</title>
+    <style>
+        hr{margin:0;padding:0;}
+        .div-left{
+            height:300px;
+            padding-left:0;
+        }
+        .div-right .container-fluid{
+            padding:0;
+        }
+        #btn-toolbar{margin-top:0 !important;}
+    </style>
+</head>
+<body>
+    
+    <div class="container-fluid">
+        <div class="div-left col-xs-2">
+            <div id="tree"></div>
+        </div>
+        <div class="div-right col-xs-10">
+            <include file="Public:button"/>
+            <table  class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width:30px;">#</th>
+                        <th style="width:30px;"><input type="checkbox" id="chk-all"/></th>
+                        <th>编号</th>
+                        <th>名称</th>
+                        <th>部门负责人</th>
+                        <th>状态</th>
+                        <th>更新人</th>
+                        <th>更新时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <volist name="childList" id="vo">
+                        <tr>
+                            <td>{$i}</td>
+                            <td><input type="checkbox" value="{$vo.id}" class="chk-item"/></td>
+                            <td>{$vo.code}</td>
+                            <td>{$vo.name}</td>
+                            <td>{$vo.user_name}</td>
+
+                            <td><if condition="$vo.status eq 1">启用<else/>停用</if></td>
+                            <td>{$vo.opt_user_name}</td>
+                            <td>{$vo.opt_time}</td>
+                        </tr>
+                    </volist>
+                </tbody>
+            </table>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+</body>
+<div id="modal-container"></div>
+<include file="AuthUser:search"/>
+</html>
+<include file="Public:list"/>
+<script>
+    var parent_code = "{$parent_code|default=''}";
+    var tree = [];
+    var treeData = {};
+    var treeDatas = {$list};
+    var selectedTreeData = {};
+    //最后一次触发节点Id
+    //最后一次触发时间
+    $(function(){
+        $(".div-left").css('height',document.body.scrollHeight-150);
+        treeData = createTree(treeDatas, "");
+        tree.push(treeData);
+        var thisTree = $('#tree').treeview({
+            data: tree,
+            icon: "glyphicon glyphicon-stop", 
+            collapseIcon: "glyphicon glyphicon-minus",  
+            expandIcon: "glyphicon glyphicon-plus",
+            showCheckbox:false,
+            onNodeSelected :nodeSelected
+        });
+        //$('#tree').treeview('selectNode',[ parent_code, { silent: true } ]);
+    });
+
+    function createTree(datas, code){
+        var treeData = null;
+        for(var k in datas){
+            if(datas[k]['parent_code'] != code){
+                continue;
+            }
+            if(treeData == null){
+                treeData = new Object();
+            }
+            treeData.text = datas[k].name;
+            treeData.code = datas[k].code;
+            treeData.id = datas[k].id;
+            if(parent_code == treeData.code){
+                treeData.state = new Object();
+                treeData.state.selected = true; 
+            }
+            var nodes = createTree(treeDatas,datas[k]['code']);
+            if(nodes != undefined && nodes != null){
+                treeData.nodes = new Array();
+                treeData.nodes.push(nodes);
+            }
+        }
+        return treeData;
+    }
+
+    function nodeSelected(event, data){
+        selectedTreeData = data.code;
+        parent_code = data.code;
+        window.location.href = '/Auth/AuthOrganization?parent_code='+parent_code;
+    }
+
+    $("#btn-add").unbind("click");
+    $("#btn-add").click(function(){
+        $.ajax({
+        url:"__URL__/addView",
+        type:"post",
+        data:{'parent_code':parent_code},
+        dataType:"json",
+        success:function(data){
+            if(data.code==1){
+                $("#modal-container").html(data.data);
+                $("#myModal").modal();
+            }
+        }
+    });
+    });
+
+    //节点双击事件
+    function nodeDbClick(){
+        $(".list-group-item").click(function(){
+            console.info(selectedTreeData);
+        });
+    }
+</script>

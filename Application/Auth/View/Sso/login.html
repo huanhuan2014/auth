@@ -1,0 +1,43 @@
+<html>
+<head>
+    <link type="text/css" rel="stylesheet" href="__PUBLIC__/css/font-awesome.min.css"/>
+    <link type="text/css" rel="stylesheet" href="__PUBLIC__/css/bootstrap.min.css"/>
+    <script src="__PUBLIC__/js/jquery-1.10.0.min.js"></script>
+    <script src="__PUBLIC__/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <include file="AuthLogin:login-info"/>
+</body>
+</html>
+<script>
+    var domain = "{$domain}";
+    var appCode = "{$appCode}";
+    $("#login-btn").click(function(){
+        if(!doCheck()){
+            return false;
+        }
+        var param = new Object();
+
+        param.user = $("#code").val().trim();
+        param.loginCode = $("#txt-img-code").val().trim();
+        param.pwd = $("#pwd").val().trim();
+        param.domain = domain;
+        param.app_code = appCode;
+
+        $.ajax({
+            url:"__URL__/ajax_login",
+            data:param,
+            dataType:"json",
+            type:"post",
+            success:function (data) {
+                if(data.code !=1){
+                    setErrMsg($("#help-block-all"),data.msg);
+                    return false;
+                }else{
+                    window.top.location.href = 'http://'+data.data;
+                }
+            }
+        });
+        return false;
+    });
+</script>

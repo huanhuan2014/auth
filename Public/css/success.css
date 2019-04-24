@@ -1,0 +1,17 @@
+#success-main{
+    margin-top:150px;
+    text-align: center;
+    min-height: 500px;
+}
+#success-main .fa{
+    font-size:50px;
+    color:green;
+}
+#success-msg{
+    display: inline-block;
+    margin-left: 10px;
+    font-size:20px;
+    position:relative;
+    bottom:10px;
+    margin-bottom:50px;
+}

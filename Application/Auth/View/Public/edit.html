@@ -1,0 +1,53 @@
+<script>
+    $("#btn-save").click(function(){
+        var param = getParam();
+        if(param==-1){
+            return;
+        }
+        $.ajax({
+            url:"__URL__/ajax_save",
+            dataType:"json",
+            type:"post",
+            data:param,
+            success:function(data){
+                if(data.code==1){
+                    alertMsg({"msg":data.msg, "end":function(){window.location.reload();}});
+                }else{
+                    alertMsg({"msg":data.msg, "type":0});
+                }
+            }
+        });
+    });
+
+    //获取表单参数信息
+    function getParam(){
+        var paramLength = $(".param").length;
+        var result = new Object();
+        for(var i=0;i<paramLength;i++){
+            var obj = $(".param").eq(i);
+            var desc = $(obj).attr("desc");
+            var mast = $(obj).attr("mast");
+            var name = $(obj).attr("name");
+            var val = $(obj).val();
+            var vType = $(obj).attr("type");
+            if(vType=="radio"||vType=="checkbox"){
+                if($("input[name='"+name+"']:checked").length<=0 && mast==1){
+                    var msg = desc+"必须选择！";
+                    alertMsg({"msg":msg, "type":0});
+                    return -1;
+                }
+                if($(obj).prop("checked")){
+                    result[name] = result[name]==""|| result[name]==undefined?val:result[name]+","+val;
+                }
+            }else{
+                if(val=="" && mast==1){
+                    var msg = desc+"值为空！";
+                    alertMsg({"msg":msg, "type":0});
+                    return -1;
+                }
+                result[name] = val;
+            }
+        }
+        return result;
+    }
+</script>

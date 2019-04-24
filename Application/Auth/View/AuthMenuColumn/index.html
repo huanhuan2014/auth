@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <include file="Public:head"/>
+    <link type="text/css" rel="stylesheet" href="__PUBLIC__/js/select2/select2.min.css"/>
+    <script src="__PUBLIC__/js/select2/select2.min.js"></script>
+    <style type="text/css">
+        .modal-backdrop{z-index: 0;}
+        .table-eidt tr{height:60px;}
+        .form-edit .input-group{margin-top:5px;}
+        .form-edit .input-group:first-child{margin-top: 0;}
+        .select2-container--default .select2-selection--single{
+            border-radius: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="alert alert-info alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>提示!</strong> 设置为不显示的列在<strong>列权限分配</strong>不可见，可以用于<strong>数据权限</strong>的筛选.
+    </div>
+    <form class="form-inline" id="form-search">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-addon">编号</div>
+                <input type="text" class="form-control" name="search_code" value="{$search_code|default=''}" placeholder="编号"/>
+            </div>
+            <div class="input-group">
+                <div class="input-group-addon">名称</div>
+                <input type="text" class="form-control" name="search_name" value="{$search_name|default=''}" placeholder="名称"/>
+            </div>
+            <div class="input-group">
+                <div class="input-group-addon">菜单类别</div>
+                <select name="search_menu_category_code" id="stl-menu-category" class="form-control">
+                    <volist name="menuCategoryList" id="vo">
+                        <option <if condition="!empty($search_menu_category_code) && $search_menu_category_code eq $vo['code']">selected='selected'</if> value="{$vo.code}">{$vo.name}</option>
+                    </volist>
+                </select>
+            </div>
+            <div class="input-group">
+                <div class="input-group-addon">菜单</div>
+                <select style="width:150px;" name="search_menu_code" id="slt-menu" class="form-control">
+                </select>
+            </div>
+        </div>
+        <button class="btn btn-default"><i class="fa fa-search"></i>&nbsp;搜索</button>
+    </form>
+</div>
+<include file="Public:button"/>
+<div class="container-fluid">
+    <table class="table table-hover table-bordered">
+        <thead>
+            <tr>
+                <th style="width:25px;">#</th>
+                <th style="width:20px;"><input type="checkbox" id="chk-all"/></th>
+                <th>所属菜单</th>
+                <th>编号</th>
+
+                <th>名称</th>
+                <th>排序</th>
+                <th>状态</th>
+                <th>是否显示</th>
+
+                <th>操作人</th>
+                <th>操作时间</th>
+            </tr>
+        </thead>
+        <tbody>
+            <volist name="list" key="j" id="vo">
+                <tr>
+                    <td>{$j}</td>
+                    <td><input type="checkbox" value="{$vo.id}" class="chk-item"/></td>
+                    <td>{$vo.menuName}</td>
+                    <td>{$vo.code}</td>
+
+                    <td>{$vo.name}</td>
+                    <td>{$vo.sort}</td>
+                    <td>{$vo.status}</td>
+                    <td>{$vo.is_show}</td>
+
+                    <td>{$vo.opt_user_name}</td>
+                    <td>{$vo.opt_time}</td>
+                </tr>
+            </volist>
+        </tbody>
+    </table>
+</div>
+<div class="container-fluid">
+    {$page}
+</div>
+<div id="modal-container"></div>
+</body>
+</html>
+<include file="Public:list"/>
+<script>
+    var menuCode = "{$search_menu_code}";
+
+    $(function(){
+        bindMenu();
+    });
+
+    $("#stl-menu-category").change(function(){
+        bindMenu();
+    });
+
+    function bindMenu(){
+        var catCode = $("#stl-menu-category").val();
+        $.ajax({
+            url:"__URL__/ajax_get_menu",
+            data:{"category_code":catCode},
+            dataType:"json",
+            type:"get",
+            success:function(data){
+                if(data.code !=1){
+                    alert(data.msg)
+                }else{
+                    var html = "<option value=''>请选择菜单</option>";
+                    for(var k in data.data){
+                        var strSelected = "";
+                        if(menuCode == data.data[k]['code']){
+                            strSelected = "selected='selected'";
+                        }
+                        html += "<option "+strSelected+ " value='"+data.data[k]['code']+"'>"+data.data[k]['name']+"</option>";
+                    }
+                    $("#slt-menu").html(html);
+                }
+            }
+        });
+    }
+
+    $("#btn-add").unbind('click');
+    $("#btn-edit").unbind('click');
+
+    $("#btn-add").click(function(){
+        var menuCode = $("#slt-menu").val();
+        var menuName = $("#slt-menu option:selected").text();
+        if(menuCode == ''){
+            alert('请选择菜单');
+            return ;
+        }
+        $.ajax({
+            url:"__URL__/addView",
+            type:"post",
+            data:{'menu_code':menuCode,'menu_name':menuName},
+            dataType:"json",
+            success:function(data){
+                if(data.code==1){
+                    $("#modal-container").html(data.data);
+                    $("#myModal").modal();
+                }else{
+                    alert(data.msg);
+                }
+            }
+        });
+    });
+
+    $("#btn-edit").click(function(){
+        var count = $(".chk-item:checked").length
+        if(count<=0){
+            alert("请选择需要修改的数据");
+            return;
+        }
+        if(count>1){
+            alert("只能选择一行数据进行修改");
+            return;
+        }
+        var menuCode = $("#slt-menu").val();
+        var menuName = $("#slt-menu option:selected").text();
+        if(menuCode == ''){
+            alert('请选择菜单');
+            return ;
+        }
+        var id = $(".chk-item:checked").val();
+        $.ajax({
+            url:"__URL__/editView",
+            type:"post",
+            dataType:"json",
+            data:{"id":id,'menu_code':menuCode ,'menu_name':menuName},
+            success:function(data){
+                if(data.code==1){
+                    $("#modal-container").html(data.data);
+                    $("#myModal").modal();
+                }else{
+                    alert(data.msg);
+                }
+            }
+        });
+    });
+</script>

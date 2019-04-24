@@ -1,0 +1,43 @@
+<html lang="en">
+<head>
+    <include file="Public:head"/>
+    <link type="text/css" rel="stylesheet" href="__PUBLIC__/css/bootstrap-datetimepicker.min.css"/>
+    <script src="__PUBLIC__/js/bootstrap-datetimepicker.min.js"></script>
+</head>
+<body>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label>用户编号：</label>
+            <input class="form-control param"  name="code" value="{$userInfo.code}" disabled="disabled"/>
+        </div>
+        <div class="form-group">
+            <label>用户名称：</label>
+            <input class="form-control param" name="name" value="{$userInfo.name}" disabled="disabled"/>
+        </div>
+        <div class="form-group">
+            <label>性别：</label>
+            <input type="radio" class="param" value="1" name="sex" <if condition="$userInfo.sex eq 1">checked='checked'</if> /> 男
+            <input type="radio" class="param" value="2" name="sex" <if condition="$userInfo.sex eq 2">checked='checked'</if> /> 女
+        </div>
+        <div class="form-group">
+            <label>Email：</label>
+            <input class="form-control param" name="email" value="{$userInfo.email}" disabled="disabled"/>
+        </div>
+        <div class="form-group">
+            <label>Phone：</label>
+            <input class="form-control param" name="phone" value="{$userInfo.phone}" disabled="disabled"/>
+        </div>
+        <div class="form-group">
+            <label>出生年月：</label>
+            <input class="form-control param" name="birthday" value="{$userInfo.birthday}" disabled="disabled"/>
+        </div>
+        <div class="form-group">
+            <button id="btn-save" class="btn btn-primary"></button>
+        </div>
+    </form>
+</body>
+</html>
+<include file="Public:edit"/>
+<script>
+    $("input[name='birthday']").datetimepicker();
+</script>

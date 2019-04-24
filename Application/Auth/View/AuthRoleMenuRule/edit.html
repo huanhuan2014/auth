@@ -1,0 +1,216 @@
+<!--boostrap modal -->
+<div class="modal fade bs-example-modal-sm" tabindex="-1" id="myModal" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">数据行权限</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-edit">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" id="li_home" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">一般数据</a></li>
+                        <li role="presentation"><a href="#org" aria-controls="org" role="tab" data-toggle="tab">部门数据</a></li>
+                    </ul>
+                    <div class="input-group" style="margin-top:10px;">
+                        <div class="input-group-addon">菜单</div>
+                        <select name="menu_code" class="form-control param" mast="1">
+                            <volist name="menuList" id="vo">
+                                <option value="{$vo.code}" <if condition="$data['menu_code'] eq $vo['code']">selected='selected'</if> >{$vo.name}</option>
+                            </volist>
+                        </select>
+                    </div>
+                    <div class="input-group" style="margin-bottom:5px;">
+                        <div class="input-group-addon">角色</div>
+                        <select name="role_code" class="form-control param" mast="1">
+                            <volist name="roleList" id="vo">
+                                <option value="{$vo.code}" <if condition="$data['menu_code'] eq $vo['code']">selected='selected'</if> >{$vo.name}</option>
+                            </volist>
+                        </select>
+                    </div>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="home">
+                            <div class="input-group">
+                                <div class="input-group-addon">字段</div>
+                                <input type="text" class="form-control param" desc="字段" mast="1" name="column_code"  value="{$data.column_code|default=''}"  placeholder="字段"/>
+                            </div>
+                            <div class="input-group">
+                                <div class="input-group-addon">名称</div>
+                                <input type="text" class="form-control param" desc="名称" mast="1" value="{$data.column_name|default=''}" name="column_name"  placeholder="名称"/>
+                            </div>
+                            <div class="input-group">
+                                <div class="input-group-addon">规则</div>
+                                <select name="rule" class="form-control param" desc="规则">
+                                    <option value="EQ">等于</option>
+                                    <option value="NEQ">不等于</option>
+                                    <option value="GT">大于</option>
+                                    <option value="EGT">大于等于</option>
+
+                                    <option value="LT">小于</option>
+                                    <option value="ELT">小于等于</option>
+                                    <option value="LIKE">LIKE</option>
+                                    <option value="NOT LIKE">NOT LIKE</option>
+
+                                    <option value="BETWEEN">BETWEEN</option>
+                                    <option value="NOT BETWEEN">NOT BETWEEN</option>
+                                    <option value="IN">IN</option>
+                                    <option value="NOT IN">NOT IN</option>
+
+                                    <option value="EXP">自定义</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <div class="input-group-addon">规则值</div>
+                                <input type="text" class="form-control param" desc="规则值" mast="1" value="{$data.value|default=''}" name="value" placeholder="规则值"/>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="org">
+                            <div class="input-group">
+                                <div class="input-group-addon">部门字段</div>
+                                <input type="text" class="form-control" name="org_column_code"  value="{$data.column_code|default=''}"  placeholder="部门字段"/>
+                            </div>
+                            <div class="input-group">
+                                <div class="input-group-addon">规则</div>
+                                <select name="org_type" class="form-control param">
+                                    <option value="1">自己数据</option>
+                                    <option value="2">本部门</option>
+                                    <option value="3">子部门</option>
+                                    <option value="4">本部门及子部门</option>
+
+                                    <option value="5">所有部门</option>
+                                    <option value="6">自定义部门</option>
+                                </select>
+                            </div>
+                            <div class="input-group" id="user_org" style="display:none;">
+                                <div class="input-group-addon">自定义部门</div>
+                                <input type="text" class="form-control" value="{$data.value|default=''}" name="org_value" placeholder="自定义部门多个用逗号隔开"/>
+                            </div>
+                        </div>
+
+                    </div>
+                    <input type="hidden" id="id" name="id" class="param" mast="0" value="{$data.id|default=''}"/>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="btn-save" class="btn btn-primary">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script>
+
+    $(function(){
+        var org_type = "{$data.org_type|default=''}";
+        if(org_type != "" && org_type !="0"){
+            $("input[name=value]").val("");
+            $("select[name=org_type]").val(org_type);
+            $("#org").tab("show");
+        }
+    });
+
+    $("select[name=org_type]").change(function(){
+        var org_type = $(this).val();
+        if(org_type == 6){
+            $("#user_org").show();
+        }else{
+            $("#user_org").hide();
+        }
+    });
+
+    $("#btn-save").click(function(){
+        var param = getParam();
+        if(param==-1){
+            return;
+        }
+        $.ajax({
+            url:"__URL__/ajax_save",
+            dataType:"json",
+            type:"post",
+            data:param,
+            success:function(data){
+                if(data.code==1){
+                    alertMsg({"msg":data.msg, "end":function(){window.location.reload();}});
+                }else{
+                    alertMsg({"msg":data.msg, "type":0});
+                }
+            }
+        });
+    });
+
+    function getParam(){
+        //一般权限是否被选择
+        var normalSelected = $("#li_home").hasClass("active") ? true : false;
+        var param = new Object();console.info(normalSelected);
+        if(normalSelected){
+            //一般数据权限
+            param = getNormalParam();
+        }else{
+            //部门数据权限
+            param = getOrgParam();
+        }
+        if(param == -1){
+            return param;
+        }
+        param.menu_code = $("select[name='menu_code']").val();
+        param.id = $("input[name=id]").val();
+        param.role_code = $("select[name='role_code']").val();
+        return param;
+    }
+
+    function getNormalParam(){
+        var param = new Object();
+        var column_code = $("input[name=column_code]").val().trim();
+        if(column_code == ""){
+            alertMsg({"msg":"请填写字段"});
+            param = -1;
+            return param;
+        }
+        var column_name = $("input[name=column_name]").val().trim();
+        if(column_name == ""){
+            alertMsg({"msg":"请填写字段名称"});
+            param = -1;
+            return param;
+        }
+        var value = $("input[name=value]").val().trim();
+        if(column_name == ""){
+            alertMsg({"msg":"请填写规则值"});
+            param = -1;
+            return param;
+        }
+        param.column_code = column_code;
+        param.column_name = column_name;
+        param.value = value;
+        param.rule = $("select[name=rule]").val();
+        return param;
+    }
+
+    function getOrgParam(){
+        var param = new Object();
+        var org_column_code = $("input[name=org_column_code]").val().trim();
+        if(org_column_code == ""){
+            alertMsg({"msg": "请填写部门字段"});
+            param = -1;
+            return param;
+        }
+        param.column_name = "部门";
+        param.column_code = org_column_code;
+        var org_type = $("select[name=org_type]").val();
+        param.rule = "IN";
+        param.org_type = org_type;
+        if(org_type ==1){
+            param.rule = "EQ";
+            param.column_name = "用户";
+        }
+        if(org_type == 6){
+            var org_value = $("input[name=org_value]").val().trim();
+            if(org_value == ""){
+                alertMsg({"msg": "请填写部门字段"});
+                param = -1;
+                return param;
+            }
+            param.value = org_value;
+        }
+        return param;
+    }
+</script>

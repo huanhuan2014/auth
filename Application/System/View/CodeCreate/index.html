@@ -1,0 +1,361 @@
+<html>
+    <head>
+        <link type="text/css" rel="stylesheet" href="__PUBLIC__/css/font-awesome.min.css"/>
+        <link type="text/css" rel="stylesheet" href="__PUBLIC__/css/bootstrap.min.css"/>
+        <link type="text/css" rel="stylesheet" href="__PUBLIC__/css/AdminLTE.min.css"/>
+        <link type="text/css" rel="stylesheet" href="__PUBLIC__/css/skins/_all-skins.min.css"/>
+        <link type="text/css" rel="stylesheet" href="__PUBLIC__/js/select2/select2.min.css"/>
+        <link type="text/css" rel="stylesheet" href="__PUBLIC__/js/codemirror/codemirror.css"/>
+        <script src="__PUBLIC__/js/jquery-1.10.0.min.js"></script>
+        <script src="__PUBLIC__/js/bootstrap.min.js"></script>
+        <script src="__PUBLIC__/js/select2/select2.min.js"></script>
+        <script src="__PUBLIC__/js/codemirror/codemirror.js"></script>
+        <script src="__PUBLIC__/js/codemirror/htmlmixed.js"></script>
+        <script src="__PUBLIC__/js/codemirror/xml.js"></script>
+        <script src="__PUBLIC__/js/codemirror/javascript.js"></script>
+        <script src="__PUBLIC__/js/codemirror/clike.js"></script>
+        <script src="__PUBLIC__/js/codemirror/php.js"></script>
+        <script src="__PUBLIC__/js/codemirror/active-line.js"></script>
+        <script src="__PUBLIC__/js/codemirror/matchbrackets.js"></script>
+        <style>
+            textarea{display: none;}
+        </style>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="form form-inline">
+                <select style="width:200px;" id="sltDataBase">
+                    <option value="">请选择表</option>
+                    <volist name="tables" id="vo">
+                        <option <if condition="$vo eq $table_name">selected='selected'</if> value="{$vo}">{$vo}</option>
+                    </volist>
+                </select>
+                <input class="form-control" id="namespace" placeholder="所属模块" style="margin-left:10px;"/>
+                <button id="btn" class="btn btn-primary" style="margin-left:20px;">生成</button>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-5">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <td style="width:20px;">#</td>
+                                <td style="width:20px;"><input checked="checked" type="checkbox" id="chkAll"/></td>
+                                <td>名称</td>
+                                <td style="width:60px;">类型</td>
+        
+                                <td style="width:50px;">可为空</td>                        
+                                <td>默认值</td>
+                                <td>备注</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <volist name="fields" id="vo">
+                                <tr >
+                                    <td>{$i}</td>
+                                    <td><input <if condition="$vo['column_key'] eq PRI">primary_key='1'<else/>primary_key='0'</if> checked="checked" type="checkbox" value="{$vo.column_name}" class="chkItem"/></td>
+                                    <td>{$vo.column_name}<if condition="$vo['column_key'] eq PRI">&nbsp;<i title="主键" class="fa fa-key"></i></if></td>
+                                    <td>{$vo.column_type}</td>
+        
+                                    <td>{$vo.is_nullable}</td>
+                                    <td>{$vo.column_default}</td>
+                                    <td>{$vo.column_comment}</td>
+                                </tr>
+                            </volist>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-xs-7">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#controller" aria-controls="controller" role="tab" data-toggle="tab">controller</a></li>
+                        <li role="presentation"><a href="#model" aria-controls="model" role="tab" data-toggle="tab">model</a></li>
+                        <li role="presentation"><a href="#view-list" aria-controls="view-list" role="tab" data-toggle="tab">view-list</a></li>
+                        <li role="presentation"><a href="#view-edit" aria-controls="view-edit" role="tab" data-toggle="tab">View-edit</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="controller">
+                            <textarea id="txt-controller"></textarea>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="model">
+                            <textarea id="txt-model"></textarea>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="view-list">
+                            <textarea id="txt-view-list"></textarea>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="view-edit">
+                            <textarea id="txt-view-edit"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+
+
+<script>
+    $("#sltDataBase").select2();
+    $("#sltDataBase").on('change',function(){
+        var table_name = $("#sltDataBase").val();
+        if(table_name!=""){
+            window.location.href = '/System/CodeCreate?table_name='+table_name;
+        }
+    });
+
+    $("#chkAll").change(function(){
+        $(".chkItem").prop('checked',$("#chkAll").prop('checked'));
+    });
+
+    var codeOption = {
+        mode: "text/html",
+        lineNumbers: true, 
+        indentUnit: 4,
+        styleActiveLine: true,
+        matchBrackets: true,
+        lineWrapping: true,
+        readOnly:true,
+        height:300,
+    };
+
+    //绑定代码高亮显示
+    function bindCode(type){
+        $(".CodeMirror").remove();
+        var txtViewList = document.getElementById("txt-view-list");
+        var txtViewEdit = document.getElementById("txt-view-edit");
+        var txtController = document.getElementById("txt-controller");
+        var txtModel = document.getElementById("txt-model");
+        switch(type){
+            case "#controller":
+                codeOption.mode = 'text/x-php';
+                var editorController = CodeMirror.fromTextArea(txtController,codeOption);
+                editorController.setSize('auto',"auto");
+                break;
+            case "#model":
+                codeOption.mode = 'text/x-php';
+                var editorModel = CodeMirror.fromTextArea(txtModel,codeOption);
+                editorModel.setSize('auto',"auto");
+                break;
+            case "#view-list":
+                codeOption.mode = 'text/html';
+                var editorViewList = CodeMirror.fromTextArea(txtViewList,codeOption);
+                editorViewList.setSize('auto',"auto");
+                break;
+            case "#view-edit":
+                codeOption.mode = 'text/html';
+                var editorViewEdit = CodeMirror.fromTextArea(txtViewEdit,codeOption);
+                editorViewEdit.setSize('auto',"auto");
+                break;
+        }
+    }
+
+    $("#btn").click(function(){
+        var namespace = $("#namespace").val().trim();
+        var vlength = $(".chkItem:checked").length;
+        if(namespace == ""){
+            alert("请填写命名空间");
+            return;
+        }
+        if(vlength==0){
+            alert("请选择需要生成的字段");
+            return;
+        }
+        createControllerCode();
+        bindCode("#controller");
+    });
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var tab = $(e.target).attr("href");
+        switch(tab){
+            case "#controller" :
+                createControllerCode();
+                break;
+            case "#model" :
+                createModelCode();
+                break;
+            case "#view-list" :
+                createListCode();
+                break;
+            case "#view-edit" :
+                createEditCode();
+                break;
+        }
+        bindCode(tab);
+    })
+
+    //生成Controller代码
+    function createControllerCode(){
+        var namespace = $("#namespace").val().trim();
+        var table_name = $("#sltDataBase").val();
+        var tableName = getHumpName(table_name);
+        var code = "<?php\r\n";
+        code += "namespace "+namespace+"\\Controller;\r\n";
+        code += "class "+tableName+"Controller extends CommonController { \r\n";
+        code += "\tprivate $model;\r\n";
+        code += "\tpublic function _initialize(){ \r\n";
+        code += "\t\tparent::_initialize();\r\n";
+        code += "\t\t$this->model = D('"+namespace+"/"+tableName+"');\r\n";
+        code += "\t}\r\n";
+        //以下index 方法
+        code += "\tpublic function index(){ \r\n";
+        code += "\t\tparent::getButtonHtml();\r\n";
+        
+        var paramCode = "";
+        var conditionCode = "";
+        $(".chkItem:checked").each(function(i,v){
+            var primary_key = $(this).attr("primary_key");
+            var fileds = $(this).val();
+            if(i%4==0){
+                paramCode += "\r\n"; 
+            }
+            paramCode += "\t\t$"+fileds+" = $this->getParam('"+fileds+"'); \r\n";
+            conditionCode += "\t\tif(!empty($"+fileds+")){ \r\n";
+            conditionCode += "\t\t\t$condition['"+fileds+"'] = $"+fileds+"; \r\n";
+            conditionCode += "\t\t} \r\n";
+            
+        });
+        code += paramCode;
+        code += "\r\n";
+        code += "\t\t$condition = array();\r\n";
+        code += conditionCode;
+        code += "\t\t$count = $this->model->where($condition)->count();\r\n";
+        code += "\t\t$page = new \Think\Page($count,$this->pageSize);\r\n";
+        code += "\t\t$show =  $page->show();\r\n";
+        code += "\t\t$list = $this->model->limit($page->firstRow.','.$page->listRows)->where($condition)->select();\r\n";
+        code += "\t\t$this->assign('list',$list);\r\n";
+        code += "\t\t$this->assign('page',$show);\r\n";
+        code += "\t\t$this->display();\r\n";
+        code += "\t}\r\n";
+        //index方法结束
+
+        //新增方法
+        code += "\tpublic function addView(){ \r\n";
+        code += "\t\t$html = $this->fetch('edit');\r\n";
+        code += "\t\t$this->ajaxReturn(1,$html);\r\n";
+        code += "\t}\r\n";
+        
+        //编辑方法
+        code += "\tpublic function editView(){ \r\n";
+        code += "\t\t$id = I('id');\r\n";
+        code += "\t\tif(empty($id)){ \r\n";
+        code += "\t\t\t$this->ajaxReturn(0,'id参数不能为空');\r\n";
+        code += "\t\t}\r\n";
+        code += "\t\t$data = $this->model->where(array('id'=>$id))->find();\r\n";
+        code += "\t\t$this->assign('data',$data);\r\n";
+        code += "\t\t$html = $this->fetch('edit');\r\n";
+        code += "\t\t$this->ajaxReturn(1,$html);\r\n";
+        code += "\t}\r\n";
+        
+        //保存方法
+        code += "\tpublic function save(){ \r\n";
+        code += "\t\t$data = $this->model->create();\r\n";
+        code += "\t\tif(empty($data['id'])){ \r\n";
+        code += "\t\t\t$this->add($data);\r\n";
+        code += "\t\t}\r\n";
+        code += "\t\t}else{ \r\n";
+        code += "\t\t\t$this->edit($data);\r\n";
+        code += "\t\t}\r\n";
+        code += "\t}\r\n";
+
+        //新增方法
+        code += "\tprivate function add($data){ \r\n";
+        code += "\t\t$addResult = $this->model->add($data);\r\n";
+        code += "\t\tif(!$addResult){ \r\n";
+        code += "\t\t\t$this->ajaxReturn(0,'保存失败！');\r\n";
+        code += "\t\t}else{ \r\n";
+        code += "\t\t\t$this->ajaxReturn(1,'保存成功！');\r\n";
+        code += "\t\t}\r\n";
+        code += "\t} \r\n";
+
+        //更新方法
+        code += "\tprivate function edit($data){ \r\n";
+        code += "\t\t$editResult = $this->model->save($data);\r\n";
+        code += "\t\tif($editResult==0){ \r\n";
+        code += "\t\t$this->ajaxReturn(0,'无数据更新');\r\n";
+        code += "\t\t}else if($editResult===false){ \r\n";
+        code += "\t\t\t$this->ajaxReturn(0,'保存失败！');\r\n";
+        code += "\t\t}else{ \r\n";
+        code += "\t\t\t$this->ajaxReturn(1,'保存成功');\r\n";
+        code += "\t\t} \r\n";
+        code += "\t}\r\n";
+
+        //删除方法
+        code += "\tpublic function del(){ \r\n";
+        code += "\t\t$ids = I('ids');\r\n";
+        code += "\t\t$condition = array();\r\n";
+        code += "\t\t$condition['id'] = array('in',$ids);\r\n";
+        code += "\t\t$delResult = $this->model->where($condition)->delete();\r\n";
+        code += "\t\tif($delResult===false){ \r\n";
+        code += "\t\t\t$this->ajaxReturn(0,'删除失败！');\r\n";
+        code += "\t\t}else{ \r\n";
+        code += "\t\t\t$this->ajaxReturn(1,'删除成功');\r\n";
+        code += "\t\t}\r\n";
+        code += "\t}\r\n";
+        
+        code += "}";
+        $("#txt-controller").text(code);
+    }
+
+    function createModelCode(){
+        var namespace = $("#namespace").val().trim();
+        var table_name = $("#sltDataBase").val();
+        var tableName = getHumpName(table_name);
+        var code = "<?php\r\n";
+        code += "namespace "+namespace+"\\Model;\r\n";
+        code += "use Think\Model;"
+        code += "class "+tableName+"Model extends Model { \r\n";
+        code += "}";
+
+        $("#txt-model").text(code);
+    }
+
+    function createListCode(){
+        var code = "";
+
+        code += "<html>\r\n";
+        //code += "\t<head>\r\n";
+        //code += "\t\t<include file=\"Public:head\"/>\r\n";
+        // code += "\t</head>\r\n";
+
+        // code += "\t<body>\r\n";
+        // code += "\t\t{$btnHtml}\r\n";
+        // code += "\t\t<div class=\"container-fluid\">\r\n";
+        // code += "\t\t\t<table class=\"table table-hover table-bordered\">\r\n";
+
+        // code += "\t\t\t\t<thead>\r\n";
+        // code += "\t\t\t\t\t<tr>\r\n";
+        // code += "\t\t\t\t\t</tr>\r\n";
+        // code += "\t\t\t\t</thead>\r\n";
+
+        // code += "\t\t</table>\r\n";
+        // code += "\t</div>\r\n";
+        // code += "\t\r\n";
+        // code += "\t\r\n";
+
+        // code += "\t\r\n";
+        // code += "\t\r\n";
+        // code += "\t\r\n";
+        // code += "\t</body>\r\n";
+    }
+
+    function createEditCode(){}
+
+    //字符串转换为驼峰表示法
+    function getHumpName(str){
+        var temp = str.split("_");
+        var result = "";
+        for(var k in temp){
+            result += replaceStr(temp[k]);
+        }
+        return result;
+    }
+
+    //首字母大写
+    function replaceStr(str){ // 正则法
+        str = str.toLowerCase();
+        var reg = /\b(\w)|\s(\w)/g; //  \b判断边界\s判断空格
+        return str.replace(reg,function(m){ 
+        return m.toUpperCase()
+        });
+    } 
+</script>

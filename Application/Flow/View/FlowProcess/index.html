@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <include file="Auth@Public:head"/>
+    <style type="text/css">
+        .modal-backdrop{z-index: 0;}
+        .table-eidt tr{height:60px;}
+        .form-edit .input-group{margin-top:5px;}
+        .form-edit .input-group:first-child{margin-top: 0;}
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <form class="form-inline">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-addon">编号</div>
+                <input type="text" class="form-control" name="search_code" value="{$search_code|default=''}" placeholder="编号"/>
+            </div>
+            <div class="input-group">
+                <div class="input-group-addon">名称</div>
+                <input type="text" class="form-control" name="search_name" value="{$search_name|default=''}" placeholder="名称"/>
+            </div>
+        </div>
+        <button class="btn btn-default"><i class="fa fa-search"></i>&nbsp;搜索</button>
+    </form>
+</div>
+<include file="Auth@Public:button"/>
+<div class="container-fluid">
+    <include file="Auth@Public:list_table"/>
+</div>
+<div class="container-fluid">
+    {$page}
+</div>
+<div id="modal-container"></div>
+</body>
+</html>
+<include file="Auth@Public:list"/>
+<script>
+    $("#category").val("{$category_code|default=''}");
+
+    $("#design").click(function(){
+        var len = $(".chk-item:checked").length;
+        if(len <=0){
+            alertMsg({"msg":"请选择数据行", "type":0});
+            return;
+        }
+        if(len >1){
+            alertMsg({"msg":"只能选择一行数据", "type":0});
+            return;
+        }
+        var processId = $(".chk-item:checked").val();
+        window.location.href = "/Flow/FlowDesign?id="+processId;
+    });
+</script>

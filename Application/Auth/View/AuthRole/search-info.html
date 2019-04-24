@@ -1,0 +1,24 @@
+<table class="table table-hover table-bordered" style="margin-top:10px;">
+    <thead>
+    <tr>
+        <th style="width:20px;">#</th>
+        <th style="width:20px;"></th>
+        <th style="width:80px;">编号</th>
+        <th>名称</th>
+
+        <th>备注</th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="vo">
+        <tr class="role-tr-data">
+            <td>{$i}</td>
+            <td><input type="checkbox" roleName="{$vo.name}" value="{$vo.code}" class="role-chk-item"/></td>
+            <td>{$vo.code}</td>
+            <td>{$vo.name}</td>
+
+            <td>{$vo.remark}</td>
+        </tr>
+    </volist>
+    </tbody>
+</table>

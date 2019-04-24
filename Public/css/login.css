@@ -1,0 +1,26 @@
+#span-code{padding:0;}
+#img-code{
+    height:30px;
+    cursor:pointer;
+}
+.help-block{display:none;}
+.login-jump{
+    text-align: center;
+}
+.other-login{
+    color:#ddd !important;
+}
+.oth_type_txt{
+    color: #bbb;
+    font-size:14px;
+    text-align: center;
+    position: relative;
+    top:12px;
+    border-bottom:none;
+    z-index: 999;
+    width:100px;
+    background-color:#fff;
+}
+.oth_type_tit{
+    border-top:1px solid #e0e0e0;
+}

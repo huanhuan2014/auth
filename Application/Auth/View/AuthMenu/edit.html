@@ -1,0 +1,92 @@
+<!--boostrap modal -->
+<div class="modal fade bs-example-modal-sm" tabindex="-1" id="myModal" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">菜单管理</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-edit">
+                    <div class="input-group">
+                        <div class="input-group-addon">类别&#12288;</div>
+                        <select name="category_code" id="category_code" class="form-control param" mast="1">
+                            <volist name="categoryList" id="vo">
+                                <option value="{$vo.code}" <if condition="$data['category_code'] eq $vo['code']">selected='selected'</if> >{$vo.name}</option>
+                            </volist>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">编号&#12288;</div>
+                        <input type="text" class="form-control param" desc="菜单编号" mast="1" name="code"  value="{$data.code|default=''}"  placeholder="菜单编号"/>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">名称&#12288;</div>
+                        <input type="text" class="form-control param" desc="菜单名称" mast="1" value="{$data.name|default=''}" name="name"  placeholder="菜单名称"/>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">控制器</div>
+                        <input type="text" class="form-control param" desc="控制器" mast="1" value="{$data.controller|default=''}" name="controller"  placeholder="控制器"/>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">默认方法</div>
+                        <input type="text" class="form-control param" desc="默认方法" mast="1" value="{$data.default_action|default=''}" name="default_action" placeholder="默认方法"/>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">路径&#12288;</div>
+                        <input type="text" class="form-control param" desc="路径" mast="1" value="{$data.url|default=''}" name="url" placeholder="路径"/>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">排序&#12288;</div>
+                        <input type="number" class="form-control param" desc="排序顺序" mast="1" name="sort" value="{$data.sort|default='0'}"  placeholder="排序顺序"/>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">部门权限</div>
+                        <select name="in_org_rule" class="form-control param">
+                            <option value="0" <if condition="$data['in_org_rule'] eq 0">selected='selected'</if> >不参与</option>
+                            <option value="1" <if condition="$data['in_org_rule'] eq 1">selected='selected'</if> >参与</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">是否显示</div>
+                        <select name="show_in_menu" class="form-control param">
+                            <option value="1" <if condition="$data['show_in_menu'] eq 1">selected='selected'</if>>显示</option>
+                            <option value="0" <if condition="$data['show_in_menu'] eq 0">selected='selected'</if>>不显示</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">行权限</div>
+                        <select name="in_row_rule" class="form-control param">
+                            <option value="0" <if condition="$data['in_row_rule'] eq 0">selected='selected'</if>>不参与</option>
+                            <option value="1" <if condition="$data['in_row_rule'] eq 1">selected='selected'</if>>参与</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">所属APP</div>
+                        <select name="app_code" class="form-control param">
+                            <volist name="appList" id="vo">
+                                <option <if condition="$data['app_code'] eq $vo['code']">selected="selected"</if> value="{$vo.code}">{$vo.name}</option>
+                            </volist>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">状态&#12288;</div>
+                        &nbsp;
+                        <label class="radio-inline">
+                            <input type="radio" desc="状态" class="modal-status param" <?php if(empty($data) || $data['status']==1) echo "checked='checked'";?> name="status" id="modal-status1" value="1" checked="checked" />&nbsp;启用
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" desc="状态" class="modal-status param" <?php if(!empty($data) && $data['status']==0) echo "checked='checked'";?>  name="status" id="modal-status0" value="0"  />&nbsp;停用
+                        </label>
+                    </div>
+                    <input type="hidden" id="id" name="id" class="param" mast="0" value="{$data.id|default=''}"/>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="btn-save" class="btn btn-primary">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<include file="Public:edit"/>

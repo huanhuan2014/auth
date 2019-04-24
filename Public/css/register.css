@@ -1,0 +1,34 @@
+
+#login-content{
+    --height:540px;
+    background:#fff;
+    margin-top:80px;
+    padding-bottom:20px;
+}
+#login-content h3{
+    text-align: center;
+    padding:10px 0 20px 0;
+    border-bottom:1px solid #ddd;
+}
+#login-content .form{
+    width:500px;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:20px;
+}
+#login-content .control-feedback{
+
+}
+#login-content .form-group{
+    margin-top:20px;
+}
+.terms{
+    display: inline-block;
+    margin:10px auto 0 auto;
+    text-align: center;
+}
+#span-code{padding:0;}
+#img-code{
+    height:30px;
+    cursor:pointer;
+}

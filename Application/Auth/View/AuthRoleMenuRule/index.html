@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <include file="Public:head"/>
+    <style type="text/css">
+        .modal-backdrop{z-index: 0;}
+        .table-eidt tr{height:60px;}
+        .form-edit .input-group{margin-top:5px;}
+        .form-edit .input-group:first-child{margin-top: 0;}
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <form class="form-inline">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-addon">菜单</div>
+                <select name="search_menu_code" class="form-control">
+                    <volist name="menuList" id="vo">
+                        <option value="{$vo.code}">{$vo.name}</option>
+                    </volist>
+                </select>
+            </div>
+        </div>
+        <button class="btn btn-default"><i class="fa fa-search"></i>&nbsp;搜索</button>
+    </form>
+</div>
+<include file="Public:button"/>
+<div class="container-fluid">
+    <table class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th style="width:20px;">#</th>
+            <th style="width:20px;"><input type="checkbox" id="chk-all"/></th>
+            <th>所属菜单</th>
+            <th>角色</th>
+
+            <th>字段</th>
+            <th>规则</th>
+            <th>规则值</th>
+            <th>操作人</th>
+
+            <th>操作时间</th>
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="list" key="j" id="vo">
+            <tr>
+                <td>{$j}</td>
+                <td><input type="checkbox" value="{$vo.id}" class="chk-item"/></td>
+                <td>{$vo.menu_name}</td>
+                <td>{$vo.role_name}</td>
+
+                <td>{$vo.column_name}</td>
+                <td>{$vo.rule_name}</td>
+                <td>{$vo.value}</td>
+                <td>{$vo.opt_user_name}</td>
+
+                <td>{$vo.opt_time}</td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+</div>
+<div class="container-fluid">
+    {$page}
+</div>
+<div id="modal-container"></div>
+</body>
+</html>
+<include file="Public:list"/>
+<script>
+    $("#category").val("{$category_code|default=''}");
+</script>

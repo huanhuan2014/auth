@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <include file="Public:head"/>
+</head>
+<body>
+<div class="container-fluid">
+    <form class="form-inline">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-addon">编号</div>
+                <input type="text" class="form-control" name="search_code" value="{$search_code|default=''}" placeholder="编号"/>
+            </div>
+            <div class="input-group">
+                <div class="input-group-addon">名称</div>
+                <input type="text" class="form-control" name="search_name" value="{$search_name|default=''}" placeholder="名称"/>
+            </div>
+        </div>
+        <button class="btn btn-default"><i class="fa fa-search"></i>&nbsp;搜索</button>
+    </form>
+</div>
+<include file="Public:button"/>
+<div class="container-fluid">
+    <include file="Public:list_table"/>
+</div>
+<div id="modal-container"></div>
+</body>
+</html>
+<include file="Public:list"/>
